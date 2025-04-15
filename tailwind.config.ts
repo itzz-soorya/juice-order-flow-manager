@@ -52,6 +52,15 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Juice shop custom colors
+				juice: {
+					orange: '#FF922B',
+					green: '#4ADE80',
+					purple: '#A78BFA',
+					red: '#F87171',
+					blue: '#60A5FA',
+					yellow: '#FBBF24',
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
