@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { Plus, Minus, Printer, ArrowLeft, X } from "lucide-react";
+import { Plus, Minus, Printer, ArrowLeft, X, Check, Clock } from "lucide-react";
 
 const Order = () => {
   const { tableId } = useParams<{ tableId: string }>();
@@ -23,10 +23,13 @@ const Order = () => {
     removeItemFromOrder,
     completeOrder,
     cancelOrder,
-    selectedTable
+    selectedTable,
+    markOrderDelivered,
+    markOrderDelayed
   } = useShop();
   
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [isOrderSent, setIsOrderSent] = useState(false);
 
   useEffect(() => {
     if (!tableId) {
@@ -95,12 +98,30 @@ const Order = () => {
     
     // In a real app, we would send the order to a printer or kitchen display system
     completeOrder();
-    navigate("/tables");
+    setIsOrderSent(true);
   };
 
   const handleCancelOrder = () => {
     cancelOrder();
     navigate("/tables");
+  };
+
+  const handleOrderDelivered = () => {
+    markOrderDelivered();
+    toast({
+      title: "Order delivered",
+      description: "Table is now available for new customers",
+    });
+    navigate("/tables");
+  };
+
+  const handleOrderDelayed = () => {
+    markOrderDelayed();
+    toast({
+      title: "Order delayed",
+      description: "The order has been marked as delayed",
+      variant: "destructive",
+    });
   };
 
   // Calculate total
@@ -131,6 +152,36 @@ const Order = () => {
             Back to Tables
           </Button>
         </div>
+
+        {/* Order Status Buttons - Only shown after order is sent to juice maker */}
+        {isOrderSent && (
+          <Card className="bg-muted/30">
+            <CardHeader>
+              <CardTitle>Order Status</CardTitle>
+              <CardDescription>Update the status of this order</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-4">
+                <Button 
+                  onClick={handleOrderDelivered} 
+                  className="gap-2 flex-1"
+                  variant="default"
+                >
+                  <Check className="h-4 w-4" />
+                  Mark as Delivered
+                </Button>
+                <Button 
+                  onClick={handleOrderDelayed} 
+                  className="gap-2 flex-1"
+                  variant="outline"
+                >
+                  <Clock className="h-4 w-4" />
+                  Mark as Delayed
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Juice Menu */}
@@ -244,7 +295,7 @@ const Order = () => {
               <Button 
                 onClick={handlePrintOrder}
                 className="gap-2"
-                disabled={!currentOrder || currentOrder.items.length === 0}
+                disabled={!currentOrder || currentOrder.items.length === 0 || isOrderSent}
               >
                 <Printer className="h-4 w-4" />
                 Send to Juice Maker

@@ -1,4 +1,3 @@
-
 import { createContext, useState, useContext, ReactNode } from 'react';
 import { Table, Juice, Order, OrderItem, OrderStatus } from '@/types';
 import { tables as initialTables, juices as initialJuices } from '@/data/mockData';
@@ -20,6 +19,8 @@ interface ShopContextType {
   deleteJuice: (id: string) => void;
   selectedTable: Table | null;
   selectTable: (tableId: string) => void;
+  markOrderDelivered: () => void;
+  markOrderDelayed: () => void;
 }
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
@@ -152,6 +153,29 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setCurrentOrder(null);
   };
 
+  const markOrderDelivered = () => {
+    if (!currentOrder || !selectedTable) return;
+    
+    // Update order status to served
+    updateOrderStatus(currentOrder.id, 'Served');
+    
+    // Set table back to free
+    setTableStatus(selectedTable.id, 'Free');
+    
+    // Reset current order
+    setCurrentOrder(null);
+  };
+
+  const markOrderDelayed = () => {
+    if (!currentOrder) return;
+    
+    // Mark order as pending but indicate delay (we still use 'Pending' status
+    // but this could be extended with a 'Delayed' status in the future)
+    updateOrderStatus(currentOrder.id, 'Pending');
+    
+    // Note: We don't change table status as it's still occupied
+  };
+
   const addJuice = (juice: Omit<Juice, 'id'>) => {
     const newJuice = {
       ...juice,
@@ -191,6 +215,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         deleteJuice,
         selectedTable,
         selectTable,
+        markOrderDelivered,
+        markOrderDelayed,
       }}
     >
       {children}
