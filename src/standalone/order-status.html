@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juice Order Status</title>
+  <link rel="stylesheet" href="./order-status.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🥤</div>
+        <h1>Sadmonks Juice Shop</h1>
+      </div>
+      <div class="user-info">
+        <div class="user">
+          <span class="user-icon">👤</span>
+          <span class="username">Server: John</span>
+        </div>
+        <button class="logout-btn">
+          <span class="logout-icon">↪</span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <aside class="sidebar">
+        <nav>
+          <button class="nav-button">Dashboard</button>
+          <button class="nav-button active">Tables</button>
+          <button class="nav-button">Manage Juices</button>
+          <button class="nav-button">Sales Reports</button>
+        </nav>
+      </aside>
+
+      <main>
+        <div class="page-header">
+          <div>
+            <h1>Order for Table 5 (Garden)</h1>
+            <p class="subtitle">Add juice items to the order</p>
+          </div>
+          <button class="back-btn">
+            <span class="back-icon">←</span>
+            Back to Tables
+          </button>
+        </div>
+
+        <!-- Order Status Card - Only shown after order is sent to juice maker -->
+        <div class="card order-status-card">
+          <div class="card-header">
+            <h2>Order Status</h2>
+            <p class="card-description">Update the status of this order</p>
+          </div>
+          <div class="card-content">
+            <div class="button-group">
+              <button class="delivered-btn" onclick="markDelivered()">
+                <span class="check-icon">✓</span>
+                Mark as Delivered
+              </button>
+              <button class="delayed-btn" onclick="markDelayed()">
+                <span class="clock-icon">🕒</span>
+                Mark as Delayed
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-grid">
+          <!-- Juice Menu -->
+          <div class="card">
+            <div class="card-header">
+              <h2>Juice Menu</h2>
+              <p class="card-description">Select juices to add to the order</p>
+            </div>
+            <div class="card-content">
+              <div class="juice-item">
+                <div>
+                  <h3>Orange Juice</h3>
+                  <p class="price">₹120.00</p>
+                </div>
+                <div class="quantity-controls">
+                  <div class="quantity-input">
+                    <button class="minus-btn">−</button>
+                    <input type="number" value="0" min="0" class="quantity">
+                    <button class="plus-btn">+</button>
+                  </div>
+                  <button class="add-btn">Add</button>
+                </div>
+              </div>
+              
+              <div class="juice-item">
+                <div>
+                  <h3>Apple Juice</h3>
+                  <p class="price">₹110.00</p>
+                </div>
+                <div class="quantity-controls">
+                  <div class="quantity-input">
+                    <button class="minus-btn">−</button>
+                    <input type="number" value="0" min="0" class="quantity">
+                    <button class="plus-btn">+</button>
+                  </div>
+                  <button class="add-btn">Add</button>
+                </div>
+              </div>
+              
+              <div class="juice-item">
+                <div>
+                  <h3>Mango Juice</h3>
+                  <p class="price">₹140.00</p>
+                </div>
+                <div class="quantity-controls">
+                  <div class="quantity-input">
+                    <button class="minus-btn">−</button>
+                    <input type="number" value="0" min="0" class="quantity">
+                    <button class="plus-btn">+</button>
+                  </div>
+                  <button class="add-btn">Add</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Order -->
+          <div class="card">
+            <div class="card-header">
+              <h2>Current Order</h2>
+              <p class="card-description">Items in the current order for Table 5</p>
+            </div>
+            <div class="card-content">
+              <div class="order-items">
+                <div class="order-item">
+                  <div>
+                    <h3>Orange Juice</h3>
+                    <p class="item-detail">2 x ₹120.00</p>
+                  </div>
+                  <div class="item-total">
+                    <p class="total-price">₹240.00</p>
+                    <button class="remove-btn">✕</button>
+                  </div>
+                </div>
+                <div class="order-item">
+                  <div>
+                    <h3>Mango Juice</h3>
+                    <p class="item-detail">1 x ₹140.00</p>
+                  </div>
+                  <div class="item-total">
+                    <p class="total-price">₹140.00</p>
+                    <button class="remove-btn">✕</button>
+                  </div>
+                </div>
+                
+                <div class="order-total">
+                  <span>Total:</span>
+                  <span>₹380.00</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button class="cancel-btn">Cancel Order</button>
+              <button class="print-btn" id="print-btn" onclick="sendToJuiceMaker()">
+                <span class="printer-icon">🖨️</span>
+                Send to Juice Maker
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden">
+    <div class="toast-content">
+      <div class="toast-title">Order status updated</div>
+      <div class="toast-description"></div>
+    </div>
+  </div>
+
+  <script>
+    function sendToJuiceMaker() {
+      document.querySelector('.order-status-card').style.display = 'block';
+      document.getElementById('print-btn').disabled = true;
+      
+      showToast('Order sent', 'The order has been sent to the juice maker');
+    }
+
+    function markDelivered() {
+      showToast('Order delivered', 'Table is now available for new customers');
+      
+      // In a real app, we would redirect to tables page
+      setTimeout(() => {
+        alert('Table status updated to Free! Redirecting to Tables page...');
+      }, 1500);
+    }
+
+    function markDelayed() {
+      showToast('Order delayed', 'The order has been marked as delayed', true);
+    }
+
+    function showToast(title, description, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.querySelector('.toast-title').textContent = title;
+      toast.querySelector('.toast-description').textContent = description;
+      
+      if (isError) {
+        toast.classList.add('error');
+      } else {
+        toast.classList.remove('error');
+      }
+      
+      toast.classList.remove('hidden');
+      
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
+    // Hide order status card initially
+    document.querySelector('.order-status-card').style.display = 'none';
+
+    // Setup quantity buttons
+    document.querySelectorAll('.plus-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const input = this.parentNode.querySelector('.quantity');
+        input.value = parseInt(input.value) + 1;
+      });
+    });
+
+    document.querySelectorAll('.minus-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const input = this.parentNode.querySelector('.quantity');
+        input.value = Math.max(0, parseInt(input.value) - 1);
+      });
+    });
+  </script>
+</body>
+</html>
